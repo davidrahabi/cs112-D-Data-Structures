@@ -1,0 +1,209 @@
+ for(int i=0; i<sortedCharFreqList.size(); i++){
+           source.enqueue(sortedCharFreqList.get(i));    // enqueue all the CharFreq into source queue
+        }
+      
+        while(!source.isEmpty()){ //execute until there is nothing left in source
+          
+            if(target.isEmpty()){        //set up the first parent node on the first iteration of the while loop
+            CharFreq r=source.dequeue();
+            TreeNode L= new TreeNode(r,null,null);
+            
+            CharFreq y=source.dequeue();
+            TreeNode R= new TreeNode(y,null,null);
+
+            double ar=r.getProbOcc();
+            double ay=y.getProbOcc();
+            double a=ar+ay; // adding the two probabilities for the parents
+            
+            CharFreq prnt= new CharFreq(null, a);
+
+            TreeNode parent= new TreeNode(prnt,L,R);
+
+            target.enqueue(parent);
+            }
+            if(!target.isEmpty() && !source.isEmpty()){  //execute the rest only if target is not empty
+                                                        //source not empty was added to account for input 2-
+                                                        //where source is empty after the first if statement above
+
+                TreeNode l=null;
+                TreeNode r=null;
+
+                TreeNode parent=null; // initialize left and right nodes and parent node before executing for loop
+
+               
+                for(int i=0; i<2;i++){ //for loop runs twice to pick two child nodes
+                    if(target.isEmpty()){ //if target is empty, this means that it was chosen in the first iteration of- 
+                                          // this for loop, so by default you have to dequeue source to be the larger-
+                                          //right node
+                        CharFreq k=source.dequeue();
+                        r=new TreeNode(k,null,null);
+                    }
+                    else if(source.isEmpty()){ // if source is empty, then that means that it was chosen in the first 
+                                                //iteration of this loop, and this will be the last time this entire
+                                                //block of code executes, so now you must dequeue from target as the
+                                                //greater node
+                        r=target.dequeue();
+                    }
+                    else{   //normal case where both source and target are not empty
+                    
+
+                double s= source.peek().getProbOcc();
+                double t= target.peek().getData().getProbOcc(); //store the values of front nodes of source and target
+
+                if(s<=t){ //if the source node is less than or equal to the target node, dequeue source
+                    CharFreq n= source.dequeue();
+                    if(l==null){      
+                        l=new TreeNode(n,null,null); // if l has not been set yet, then the dequeued node must be the left
+                                                    //node of the tree
+                    }
+                    else{
+                        r=new TreeNode(n,null,null); //if l has already been set, then the dequeude node must be the right
+                                                     // node of the tree
+                    }
+                    
+                }
+                else{ //if target is less, dequeue from it
+                    TreeNode p=target.dequeue();
+
+                    if(l==null){ //same as above (except now its setting a treenode instead of a CharFreq)
+                        l=p;
+                    }
+                    else{
+                        r=p;
+                    }
+                }
+                   
+                }
+
+
+             }
+
+             //after this for loop is done, you will have your left and right nodes set
+             //just make the new charfreq with their added up values, set the parent node, and enqueue it into target
+
+            
+                 double ll=l.getData().getProbOcc();
+                 double rr= r.getData().getProbOcc();
+
+                 CharFreq pval= new CharFreq(null, ll+rr);
+
+                 /*if(ll<=rr){                      //this was just an extra check to make sure the left and right
+                                                    //nodes were set correcly, but after testing it didn't look like
+                                                    //it was needed
+                    parent=new TreeNode(pval, l, r);    
+                 }
+                 else{
+                    parent=new TreeNode(pval, r, l);
+                 }*/
+
+                 parent=new TreeNode(pval, l, r);
+                 target.enqueue(parent);
+
+
+
+            }
+            
+           
+
+        }
+        int u=0;
+
+         Queue<TreeNode> antarget=new Queue<TreeNode>();
+         TreeNode antL=new TreeNode();
+         TreeNode antR=new TreeNode();
+         
+
+        if(target.size()>1){
+            while(!target.isEmpty()){
+                if(target.size()==1){
+                    antL=target.dequeue();
+                    antR=antarget.dequeue();
+                    if( antL.getData().getProbOcc()<=antR.getData().getProbOcc()){
+                        CharFreq s=new CharFreq(null, antL.getData().getProbOcc()+antR.getData().getProbOcc());
+                        TreeNode antP= new TreeNode(s, antL,antR);
+                        antarget.enqueue(antP);
+                    }
+                    else{
+                        CharFreq s=new CharFreq(null, antL.getData().getProbOcc()+antR.getData().getProbOcc());
+                        TreeNode antP= new TreeNode(s, antR,antL);
+                        antarget.enqueue(antP);
+                    }
+                }
+                else if(!target.isEmpty()){
+                antL=target.dequeue();
+                antR=target.dequeue();
+                CharFreq s=new CharFreq(null, antL.getData().getProbOcc()+antR.getData().getProbOcc());
+                TreeNode antP= new TreeNode(s, antL,antR);
+                antarget.enqueue(antP);
+                }
+
+                if(antarget.size()==2){
+                    antL=antarget.dequeue();
+                    antR=antarget.dequeue();
+                     CharFreq s=new CharFreq(null, antL.getData().getProbOcc()+antR.getData().getProbOcc());
+                    TreeNode antP= new TreeNode(s, antL,antR);
+                    antarget.enqueue(antP);
+                }
+            }
+            target.enqueue(antarget.dequeue());
+        }
+
+         huffmanRoot=target.dequeue();
+
+
+
+
+
+
+
+
+
+
+
+
+         while(!source.isEmpty()){
+        
+        if(target.isEmpty()){
+           
+            TreeNode l= new TreeNode(source.dequeue(),null,null);
+          TreeNode r= new TreeNode(source.dequeue(),null,null);
+            CharFreq prnt= new CharFreq(null, r.getData().getProbOcc()+l.getData().getProbOcc());
+            TreeNode parent= new TreeNode(prnt,l,r);
+            target.enqueue(parent);
+        }
+        if(!target.isEmpty() && !source.isEmpty()){
+           TreeNode parent=null;
+            double s=source.peek().getProbOcc();
+            double t= target.peek().getData().getProbOcc();
+
+            if(s<=t){
+                TreeNode r=null;
+                TreeNode l=new TreeNode(source.dequeue(),null,null);
+                if(!source.isEmpty() && source.peek().getProbOcc()<=t){
+                    r=new TreeNode(source.dequeue(),null,null);
+                }
+                else{
+                    r=target.dequeue();
+                }
+                parent=new TreeNode(null,l,r);
+
+            }
+            else{
+                TreeNode r=null;
+                TreeNode l=new TreeNode(target.dequeue().getData(),null,null);
+                if(source.peek().getProbOcc()<=t){
+                    r=new TreeNode(source.dequeue(),null,null);
+                }
+                else{
+                    r=target.dequeue();
+                }
+                parent=new TreeNode(null,l,r);
+            }
+        
+        
+        double val=parent.getLeft().getData().getProbOcc()+parent.getRight().getData().getProbOcc();
+        CharFreq pval= new CharFreq(null, val);
+        parent.setData(pval);
+        target.enqueue(parent);
+        }
+    }
